@@ -1,0 +1,365 @@
+---
+title: "startR 1: Objets de base"
+author: "Lise Vaudor"
+date: "21 mars 2017"
+output: 
+  slidy_presentation:
+    css: styles.css 
+---
+
+
+# Création d'objets
+
+Nous avons vu dans la section précédente **comment créer des objets très simples** et comment les **assigner à un environnement**.
+
+Il y a en fait une multitude de types d'objets possibles dans R. Ici nous allons aborder
+
+- les **vecteurs**
+- les **facteurs**
+- les **matrices**
+- les **tableaux de données**
+
+
+# Création de vecteurs
+
+On appelle **vecteur** toute **séquence d'éléments** de même type, par exemple: 
+
+
+<div id="left">
+
+v1= 
+
+        2.3 3.6 1.1 2.4 2.5 10.2 5.1 2.0 
+ 
+v2=
+    
+        "Paris" "Lyon" "Marseille" "Rennes" "Montpellier"
+
+ou v3=
+
+        TRUE FALSE FALSE TRUE TRUE
+</div>
+
+<div id="right">
+En R, ces vecteurs s'écrivent: 
+
+```{r}
+v1 <- c(2.3,3.6,1.1,2.4,2.5,10.2,5.1,2.0)
+v1
+v2 <- c("Paris","Lyon","Marseille","Rennes","Montpellier")
+v2
+v3 <- c(TRUE,FALSE,FALSE,TRUE,TRUE)
+v3
+```
+</div>
+     
+# Création de vecteurs
+
+On peut également créer des vecteurs correspondant à: 
+
+
+<div id="left">
+- des **séquences de valeurs régulièrement espacées**
+
+
+```{r}
+# valeurs de 0 à 10 par pas de 2
+v4 <- seq(from=0,to=10,by=2)
+v4
+# 20 valeurs regulierement espacees de 2 a 13
+v5 <- seq(from=2,to=13,length.out=20)  
+v5
+# nombres entiers de 0 a 10
+v6 <- 0:10 
+v6
+```
+</div>
+<div id="right">
+- des **séquences de valeurs répétées**
+
+```{r}
+# repetition de "date1" 5 fois
+v7<-rep("date1",5)
+v7
+# repetition du vecteur v6 3 fois
+v8<-rep(v6,3)
+v8
+```
+</div>
+
+# Classes des objets
+
+Les vecteurs peuvent être de classes différentes selon le type de valeurs qu'ils contiennent (par contre toutes les valeurs d'un vecteur sont supposées être d'un même type).
+
+<div id="left">
+Ils peuvent par exemple être de mode
+
+- **numérique** 
+- **caractère** 
+- **logique**, c'est à dire que les valeurs qu'ils contiennent sont de type vrai / faux (TRUE / FALSE ou T / F).
+</div>
+<div id="right">
+
+Par exemple, pour v1, v2, et v3:
+
+```{r}
+v1 <- c(2.3,3.6,1.1,2.4,2.5,10.2,5.1,2.0)
+class(v1)
+v2 <- c("Paris","Lyon","Marseille","Rennes","Montpellier")
+class(v2)
+v3 <- c(TRUE,FALSE,FALSE,TRUE,TRUE)
+class(v3)
+```
+</div>
+
+# Création de vecteurs
+
+<div id="left">
+Remarquez que l'on peut aussi utiliser `c()` pour combiner plusieurs vecteurs:
+
+```{r}
+v4
+v5
+vglobal<-c(v4,v5)
+vglobal
+```
+</div>
+<div id="right">
+Si l'on tente quelque chose comme 
+
+```{r}
+v6
+v7
+vessai=c(v6,v7)
+vessai
+```
+
+R ne renvoie pas de message d'erreur, mais fait en sorte que toutes les valeurs de vessai soient d'un même type (des chaînes de caractère ici: voyez les guillemets autour des valeurs de v7).
+</div>
+
+# Valeurs manquantes
+
+Il peut arriver que certaines valeurs d'un objet soient **non renseignées**. En R, ces valeurs s'écrivent `NA` (pour **n**ot **a**vailable).
+
+Par exemple:
+
+```{r}
+v9 <- c(3.2, NA, 8.9, 42.3, 59.2, NA)
+```
+
+
+#  Création de facteurs
+
+Les facteurs ressemblent généralement à des vecteurs de mode caractère, à la nuance près qu'ils comprennent généralement plusieurs **niveaux**, comme par exemple
+
+```{r}
+f1=factor(c(rep("date1",5),rep("date2",5)))
+f1
+levels(f1)
+```
+
+La nuance entre vecteurs et facteurs est importante pour un certain nombre de fonctions implémentées dans R, il est donc assez souvent nécessaire de convertir les vecteurs en facteurs et inversement.
+
+#  Création de matrices
+
+<div id="left">
+
+On appelle "matrice" toute **grille de valeurs** (à 2 dimensions) , par exemple : 
+ 
+M1=
+
+     1  3  7 
+     
+     2  8  0 
+
+
+En R, cette matrice peut être créée de la manière suivante: 
+
+```{r}
+M1 <- matrix(c(1,2,3,8,7,0),nrow=2,ncol=3)
+M1
+```
+</div>
+<div id="right">
+On peut également considérer qu'une matrice résulte de l'accolement de plusieurs vecteurs, en ligne ou en colonnes.
+Par exemple on peut écrire M1 des deux manières suivantes:
+
+```{r}
+M1<-cbind(c(1,2),c(3,8),c(7,0))
+M1<-rbind(c(1,3,7),c(2,8,0))
+```
+</div>
+
+# Création de listes 
+
+Une liste est un **assemblage d'objets** de **natures et/ou de tailles différentes**. Par exemple, la liste l1
+
+```{r}
+l1=list(sites=v2, nb=M1)
+l1
+```
+rassemble un vecteur (v2) et une matrice (M1) au sein d'un même objet.
+
+En pratique, **de nombreuses fonctions de R renvoient un objet de type liste** (par exemple, un objet "régression linéaire", renvoyé par la fonction lm, comprend entre autres choses un vecteur de coefficients de la régression et un vecteur de résidus de la régression (donc deux vecteurs de tailles différentes).
+
+# Création d'objets: tableaux de données
+
+<div id="left">
+Comme une matrice, un tableau de données compte **plusieurs lignes et colonnes**. En revanche, les colonnes (ou **variables**) d'un tableau de données **peuvent être de types différents**, et sont **nommées**.
+
+|Espece|Nom|Date
+|------|---|---|
+|Chien|Lassie|1940|
+|Dauphin|Flipper|1964|
+|Chat|Garfield|1978|
+|Eponge|Bob|1999|
+</div>
+<div id="right">
+
+Voici comment créer un tableau de données (**data.frame**) sous R, en assemblant plusieurs vecteurs de même taille:
+
+```{r}
+Espece <- c("Chien","Dauphin","Chat","Eponge")
+Nom <- c("Lassie","Flipper","Garfield","Bob")
+Date <- c(1940,1964,1978,1999)
+t1 <- data.frame(Espece,Nom,Date)
+t1
+```
+
+</div>
+
+# Création d'objets, conversion d'objets
+
+<div id="left">
+Pour interroger R quant au type (vecteur, facteur, tableau, matrice, etc.) ou au mode (numérique, caractère, logique, etc.) d'un objet, on utilise les fonctions de type **is.____**. 
+
+Par exemple:
+
+```{r}
+v6
+is.factor(v6)
+is.numeric(v6)
+```
+</div>
+
+<div id="right">
+On peut convertir un objet d'un type ou mode à un autre en utilisant les fonctions de type **as.____**. Par exemple,
+
+```{r}
+v6f <- as.factor(v6)
+v6f
+```         
+
+convertit le vecteur v6 en facteur pour créer v6f.
+</div>
+
+
+# Indexation d'un vecteur ou d'un facteur
+
+On peut s'intéresser à une partie d'un objet, par exemple un ou plusieurs éléments d'un vecteur ou d'un facteur.
+
+<div id="left">
+On a accès au i$^{eme}$ élément d'un vecteur/facteur par la commande:
+
+```{r, eval=FALSE}
+v[i]
+```
+
+Par exemple:
+```{r}
+v1
+v1[4]
+v1[1:3]  # les trois premieres valeurs
+v1[c(2,5,6)]
+```
+</div>
+
+<div id="right">
+Pour un facteur:
+```{r}
+f1
+f1[3:4]
+```
+Remarquez que dans les éléments n° 3 et 4 du facteur `f1`, il n'y a que la valeur "date1". Cependant, "date2" fait toujours partie des niveaux possibles de ce facteur!
+</div>
+
+# Indexation d'une matrice
+
+Si l'on s'intéresse à l'élément d'une matrice ou d'un tableau de données qui se situe sur la i$^{eme}$ ligne et sur la j$^{eme}$ colonne, on y a accès par:
+
+```{r, eval=FALSE}
+M[i,j]
+```
+
+```{r}
+M1
+M1[1,3] # la valeur sur la ligne 1 et la colonne 3
+M1[,3]  # toutes les valeurs sur la colonne 3
+M1[2,1:2] # les deux premieres valeurs de la ligne 2
+```
+
+# Indexation d'une liste
+
+<div id="left">
+Pour le i$^{eme}$ élément d'une liste on utilise des double crochets, ou bien le nom de l'élément auquel on s'intéresse:
+
+```{r, eval=FALSE}
+liste[[i]]
+liste[["element"]]
+liste$element
+```
+
+Par exemple, considérons notre liste `l1`:
+
+```{r}
+l1
+```
+</div>
+<div id="right">
+
+
+```{r}
+l1[[1]] #equivalent a l1$sites
+l1$nb   #equivalent a l1[[2]]
+```
+
+Remarquez que l'élément `sites` de notre liste `l1` est un vecteur... Il est donc indexable comme un vecteur! De même, l'élément `nb` est une matrice et l'on retrouve pour lui le système d'indexation d'une matrice
+
+```{r}
+l1$sites[2]
+l1$nb[1,3]
+```
+
+</div>
+
+
+# Indexation d'un tableau
+
+<div id="left">
+Pour la i$^{eme}$ variable d'un tableau on utilise des double crochets, ou bien le nom de la variable à laquelle on s'intéresse:
+
+```{r, eval=FALSE}
+tableau[[i]]
+tableau[["variable"]]
+tableau$variable
+```
+
+Par exemple, considérons notre tableau `t1`:
+```{r, echo=FALSE}
+t1 <- data.frame(Espece,Nom,Date, stringsAsFactors=FALSE)
+```
+
+```{r}
+t1
+```
+</div>
+<div id="right">
+
+
+```{r}
+t1[[1]]  #equivalent a t1$Nom
+t1$Nom   #equivalent a t1[[2]]
+```
+
+
+</div>
