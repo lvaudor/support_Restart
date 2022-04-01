@@ -1,8 +1,11 @@
-body, td {
+body, p {
    font-family: sans-serif;
    background-color: white;
    font-size: 1.2em;
    color: #4d4d4d;
+   padding-left: 0px;
+   padding-top: 10px;
+   margin: 0px;
 }
 
 body {
@@ -10,10 +13,6 @@ body {
   margin: 0em;
   padding: 0em;
   line-height: 20px;
-}
-
-tt, code, pre {
-   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
 
 h1 {
@@ -42,6 +41,11 @@ h6 {
    font-size:0.8em;
 }
 
+
+.caption {
+   font-size:0.4em;
+}
+
 a:visited {
    color: rgb(50%, 0%, 50%);
 }
@@ -52,35 +56,42 @@ pre, img {
 
 strong{color: #ff99ff;}
 
+
+
 pre {
-  overflow-x: auto;
-   padding:0em;
-   border:0em;
-   margin:0.25em;
-}
-pre code {
-   overflow-x: inherit;
-   display: block;
-   background-color: #ffccff;
-   padding:0em;
-   border:0em;
-   margin:0.25em;
+   overflow-x: auto;
+   padding: 0em;
+   border-width: 0em;
+   margin:0em;
    font-size:0.8em;
+   background-color: #ffccff!important;
 }
-
+pre.r {
+    margin-top: 0.6em;
+    background-color: #ffff99!important;
+    font-size: 0.8em;
+   }
 code {
-   overflow-x: inherit;
-   padding:0em;
-   border:0em;
-   margin:0.25em;
+  white-space: pre-wrap;
+  background-color: inherit;
+  font-size: 1em;
 }
 
-code[class] {
-  background-color: #ffff99;
+
+table{
+   width:100%;
 }
 
-table, td, th {
+table, td, tr {
   border: none;
+  vertical-align: top;
+  border-width: 0px;
+  padding: 20px;
+  padding-top: 10px;
+}
+
+td{
+  width:48%;
 }
 
 blockquote {
@@ -98,14 +109,17 @@ hr {
    border-top-color: #999999;
 }
 
-#left {
-  width: 48%;
-  float: left;
+
+
+.encadre{
+  background-color: #e6f2ff;
 }
-#right {
-  margin-left: 54%;
-  /* Change this to whatever the width of your left column is*/
+
+.small {
+  font-size: 70%;
 }
+
+
 .clear {
   clear: both;
 }
