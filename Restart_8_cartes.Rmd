@@ -1,0 +1,265 @@
+---
+title: "Restart 8: Faire des cartes sous R avec tmap"
+author: "Lise Vaudor"
+date: "21/09/2020"
+output: 
+  slidy_presentation:
+    css: styles.css 
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment=NA)
+options(width=50)
+library(tidyverse)
+library(tmap)
+library(tmaptools)
+library(sf)
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,fig.height=4, fig.width=6)
+```
+
+# Un choix de packages très (trop) large!
+
+<table><tr><td>
+
+Cartes **statiques**:
+
+- ggplot/ggmap (cartes simples, compatibles tidyverse)
+- cartography (cartes élaborées, cartographe-compatibles)
+- **tmap**
+
+</td><td>
+
+Cartes **dynamiques**:
+
+- leaflet
+- mapview
+- **tmap**
+
+</td></tr></table>
+
+# A partir d'un tableau de données: passage vers classe sf
+
+<table><tr><td>
+
+Si l'on dispose de coordonnées pour chaque individu : transformation en objet sf de type **MULTIPOINT**
+
+```{r read_point_data}
+path_data="http://perso.ens-lyon.fr/lise.vaudor/datasets/"
+lyon_equipements=read_csv(paste0(path_data,
+                                 "lyon_equipements.csv")) %>% 
+  st_as_sf(coords=c("lon","lat"), crs=4326)
+
+lyon_marches=lyon_equipements %>% filter(type=="marché")
+```
+
+</td><td>
+
+Si l'on dispose de données spatiales (type **shapefile**) 
+
+
+```{r read_shapefile}
+arrondissements=st_read(paste0(path_data,
+                               "arrondissements.gpkg")) %>% 
+  st_set_crs(4326)
+```
+
+</td></tr></table>
+
+# Statique ou dynamique
+
+<table><tr><td>
+```{r carte_statique}
+tmap_mode("plot")
+tm_shape(lyon_marches)+
+  tm_dots()
+```
+
+</td><td>
+```{r carte_dynamique}
+tmap_mode("view")
+tm_shape(lyon_marches)+
+  tm_dots()
+```
+</td></tr></table>
+
+# Basemaps
+
+<table><tr><td>
+
+- Possibilité de **ne pas utiliser de basemap** (par défaut)
+- Possibilité d'utiliser le raster de votre choix comme basemap
+- Possibilité d'utiliser des "basemap services"
+
+</td><td>
+
+Par défaut, utilisation de la basemap **Esri.WorldGrayCanvas**:
+
+```{r show_default_basemap}
+tmap_mode("view")
+tm_shape(lyon_marches)+
+  tm_dots(size=0.5)
+```
+</td></tr></table>
+
+# Basemap services
+
+<table><tr><td>
+
+Pour ne **pas** afficher de basemap en mode View:
+
+```{r no_basemap}
+tm_basemap(NULL)+
+tm_shape(lyon_marches)+
+  tm_dots()
+```
+<td>
+
+Pour **changer** de basemap service
+
+```{r change_basemap_service}
+tm_basemap(leaflet::providers$Stamen.Watercolor)+
+tm_shape(lyon_marches)+
+  tm_dots(size=0.5)
+```
+
+Un aperçu des possibilités [ici](http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
+</td></tr></table>
+
+# Layers: tm_shape() + tm_...()
+
+<table><tr><td>
+
+- tm_shape(): la base de toute layer: on y indique le jeu de données utilisé
+- tm_xxx() permet de rajouter les couches de symboles. Ici pour des points, tm_dots semble tout indiqué:
+
+```{r tm_shape_tm_xxx}
+tm_shape(lyon_marches)+
+  tm_dots()
+```
+
+</td><td>
+
+On peut évidemment paramétrer les couches de symboles:
+
+```{r tm_dots_param}
+tm_shape(lyon_marches)+
+  tm_dots(size=0.5)
+```
+</td></tr></table>
+
+# Layers "de base"
+
+<table><tr><td>
+- `tm_polygons()`/`tm_fill()`/`tm_borders()` pour des **polygones**
+- `tm_symbols()`/`tm_dots()`/`tm_squares()`/`tm_bubbles()`/`tm_markers()` pour des **points**
+- `tm_lines()`/(`tm_iso()`) pour des **lignes**
+- `tm_raster()`/`tm_rgb()` pour des **rasters**
+- `tm_basemap()`/`tm_tiles()` pour les **basemaps**
+- `tm_text()` pour du **texte**
+
+</td><td>
+
+```{r add_arrondissements}
+tm_shape(lyon_marches)+
+  tm_squares(size=0.5)+
+  tm_shape(arrondissements)+
+  tm_borders(lwd=3, col="red")
+```
+</td></tr></table>
+
+# "Esthétiques"
+
+<table><tr><td>
+
+Un peu comme avec ggplot, on peut **relier directement une propriété graphique à un attribut des individus**... La syntaxe, en revanche, n'est pas la même:
+
+On n'écrit pas 
+
+`mapping=aes(color=nom_attribut)` 
+
+mais juste `col="nom_attribut"`.
+
+</td><td>
+```{r add_esthetiques}
+tm_shape(lyon_marches)+
+  tm_dots(col="categorie", size=1)
+```
+</td></tr></table>
+
+# Facettes
+
+<table><tr><td>
+On peut également créer des **facettes** d'une même carte à l'aide de `tm_facets()` (équivalent de `ggplot2::facet_wrap()`)
+
+</td><td>
+
+```{r add_facettes}
+tm_shape(lyon_marches)+
+  tm_facets(by="categorie")+
+  tm_dots() 
+```
+</td></tr></table>
+
+# Détails de la carte
+
+<table><tr><td>
+- `tm_scale_bar()`
+- `tm_grid()`
+- `tm_compass()`
+- `tm_credits()`
+- `tm_logo()`
+- `tm_xlab()`
+- `tm_ylab()`
+- `tm_minimap()` (view mode)
+
+</td><td>
+```{r add_extra}
+tm_shape(lyon_marches)+
+  tm_squares(size=0.5, col="olivedrab4")+
+  tm_scale_bar(position=c("right","top"))+
+  tm_compass()+
+  tm_credits("created with tmap")
+```
+
+</td></tr></table>
+
+# Layout de la carte
+
+<table><tr><td>
+
+- `tm_legend()`
+- `tm_layout()`
+- `tm_view()` (options pour mode view)
+- `tm_style()`
+- `tm_format()`
+
+</td><td>
+```{r add_layout}
+tm_shape(lyon_marches)+
+  tm_squares(size=0.5, col="categorie")+
+  tm_legend(position=c("right","top"), bg.color="grey95")+
+  tm_layout(main.title="Où faire son marché à Lyon?",
+            main.title.color="slateblue")
+```
+
+</td></tr></table>
+
+
+
+# On récapitule!
+
+<table><tr><td style="width: 30%">
+![On a parlé de quoi, déjà?](figures/dory.jpg)
+</td><td style="width: 70%">
+- Modes **view** ou **plot**
+- **basemaps**
+- **layers** : tm_shape + tm_...()
+- Construction des cartes: **esthétiques**, **facettes**
+- **Paramétrage fin**: détails et layout
+</td></tr></table>
+
